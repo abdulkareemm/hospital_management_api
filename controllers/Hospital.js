@@ -17,8 +17,9 @@ exports.Create = async (req, res) => {
       address,
       email,
       privacy_policy,
-      logo,
+      
     } = req.body;
+    const {file:logo} = req
 
     const hospital = new Hospital({
       name,
@@ -31,10 +32,12 @@ exports.Create = async (req, res) => {
       privacy_policy,
       password: "123456",
     });
-    if (file) {
-      const { url, public_id } = await uploadImageToCloud(file.path);
-      clinic.logo = { url, public_id };
+    console.log(logo)
+    if (logo) {
+      const { url, public_id } = await uploadImageToCloud(logo.path,"Hospital/admin");
+      hospital.logo = { url, public_id };
     } else {
+
       return res
         .status(404)
         .json({ msg: "Logo is required", success: false });
@@ -47,6 +50,7 @@ exports.Create = async (req, res) => {
       hospital,
     });
   } catch (err) {
+    console.log(err)
     console.log(err.message);
     res.status(500).json({ err: "something wrong!" });
   }
