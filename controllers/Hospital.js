@@ -3,6 +3,8 @@ const Clinic = require("../models/Clinic");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
+const { uploadImageToCloud } = require("../utils/helper");
+
 
 exports.Create = async (req, res) => {
   try {
@@ -15,6 +17,7 @@ exports.Create = async (req, res) => {
       address,
       email,
       privacy_policy,
+      logo,
     } = req.body;
 
     const hospital = new Hospital({
@@ -28,6 +31,14 @@ exports.Create = async (req, res) => {
       privacy_policy,
       password: "123456",
     });
+    if (file) {
+      const { url, public_id } = await uploadImageToCloud(file.path);
+      clinic.logo = { url, public_id };
+    } else {
+      return res
+        .status(404)
+        .json({ msg: "Logo is required", success: false });
+    }
 
     await hospital.save();
 
@@ -86,7 +97,7 @@ exports.Login = async (req, res) => {
   }
 };
 
-exports.CreateClinic = async (req, res) => {
+exports.Create_Clinic = async (req, res) => {
   try {
     const {
       name,
@@ -105,11 +116,9 @@ exports.CreateClinic = async (req, res) => {
     const { file } = req;
 
     const hospital = await Hospital.findOne({
-      _id: "66a0841f0c9ec23e6eca8e6a",
+      _id: admin_hos._id,
     });
-    const clinics = await Hospital.findById(
-      "66a0841f0c9ec23e6eca8e6a"
-    ).populate("clinics");
+    const clinics = await Hospital.findById(admin_hos._id).populate("clinics");
 
     if (hospital.clinics.length === 0) {
       const slat = await bcrypt.genSalt(10);
