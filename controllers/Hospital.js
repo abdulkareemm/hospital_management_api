@@ -1,6 +1,8 @@
 const Hospital = require("../models/Hospital");
 const Clinic = require("../models/Clinic");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const _ = require("lodash");
 
 exports.Create = async (req, res) => {
   try {
@@ -44,6 +46,41 @@ exports.Get = async (req, res) => {
     const Hos = await Hospital.find();
     res.status(200).json(Hos);
   } catch (error) {
+    console.log(err.message);
+    res.status(500).json({ err: "something wrong!" });
+  }
+};
+
+exports.Login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const hospital = await Hospital.findOne({ email });
+    if (!hospital) {
+      return res
+        .status(404)
+        .json({ msg: "User doesn't found!", success: false });
+    }
+    if (password == hospital.password) {
+      //return res.status(201).json({ msg: "Login Successfully!", hospital });
+      const token = jwt.sign({ id: hospital._id }, process.env.JWT_SECRET_KEY, {
+        expiresIn: "1d",
+      });
+
+      res.status(201).json({
+        token,
+        msg: "Login successfully",
+        success: true,
+        hospital: _.omit(hospital.toObject(), [
+          "password",
+          "createdAt",
+          "updatedAt",
+          "__v",
+        ]),
+      });
+    } else {
+      return res.status(403).json({ msg: "Password doesn't match!" });
+    }
+  } catch (err) {
     console.log(err.message);
     res.status(500).json({ err: "something wrong!" });
   }

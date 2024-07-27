@@ -1,13 +1,13 @@
-const { Create, Get, CreateClinic, Delete_Clinic } = require("../controllers/Hospital");
-
+const { Create, Get, CreateClinic, Delete_Clinic, Login } = require("../controllers/Hospital");
+const { uploadImage } = require("../middleware/multer");
 const router = require("express").Router();
 
 
 router.post("/create", Create);
-
+router.post("/login", Login);
 router.post(
   "/add-clinic",
-//   uploadImage.single("logo"),
+  uploadImage.single("logo"),
 //   is_auth,
 //   isAdmin,
 //   clinicInfoValidator,
