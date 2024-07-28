@@ -5,6 +5,18 @@ const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const { uploadImageToCloud } = require("../utils/helper");
 
+/**
+ * Create a new hospital
+ * ✅
+ */
+/**
+ * ✅ Steps :
+ * 1- extract incoming data from request body
+ * 2- create new instance of Hospital schema
+ * 3- save image in cloudinary , if there false kill instance and return error to user
+ * 4- save instance to database
+ * 5- return data to user
+ */
 
 exports.Create = async (req, res) => {
   try {
@@ -17,9 +29,8 @@ exports.Create = async (req, res) => {
       address,
       email,
       privacy_policy,
-      
     } = req.body;
-    const {file:logo} = req
+    const { file: logo } = req;
 
     const hospital = new Hospital({
       name,
@@ -32,15 +43,14 @@ exports.Create = async (req, res) => {
       privacy_policy,
       password: "123456",
     });
-    console.log(logo)
     if (logo) {
-      const { url, public_id } = await uploadImageToCloud(logo.path,"Hospital/admin");
+      const { url, public_id } = await uploadImageToCloud(
+        logo.path,
+        "Hospital/admin"
+      );
       hospital.logo = { url, public_id };
     } else {
-
-      return res
-        .status(404)
-        .json({ msg: "Logo is required", success: false });
+      return res.status(404).json({ msg: "Logo is required", success: false });
     }
 
     await hospital.save();
@@ -50,7 +60,7 @@ exports.Create = async (req, res) => {
       hospital,
     });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     console.log(err.message);
     res.status(500).json({ err: "something wrong!" });
   }
@@ -66,6 +76,18 @@ exports.Get = async (req, res) => {
   }
 };
 
+/**
+ * Login hospital
+ * ✅
+ */
+/**
+ * ✅ Steps :
+ * 1  extract the incoming data from the request body
+ * 2  search by email in database
+ * 3  check if the password is correct
+ * 4  create new token
+ * 5  return data
+ */
 exports.Login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -76,7 +98,6 @@ exports.Login = async (req, res) => {
         .json({ msg: "User doesn't found!", success: false });
     }
     if (password == hospital.password) {
-      //return res.status(201).json({ msg: "Login Successfully!", hospital });
       const token = jwt.sign({ id: hospital._id }, process.env.JWT_SECRET_KEY, {
         expiresIn: "1d",
       });
@@ -101,6 +122,23 @@ exports.Login = async (req, res) => {
   }
 };
 
+/**
+ * Create a new Clinic 
+ * ✅
+ */
+/**
+ * ✅ Steps :
+ * 1- extract the incoming data from the request body
+ * 2- retrieve hospital information from the database
+ * 3- checkout the clinics in hospital
+ * 4- we have 2 cases:
+ *       -if there is no clinics just make new instance from clinic schema and save it in database
+ *       -if there is already clinics check if it exists return new error else make new instance from 
+ *            clinic schema and save it in database
+ * 5- add new clinic to Clinics array in hospital instance
+ * 6- save instance hospital
+ * 7- return data
+ */
 exports.Create_Clinic = async (req, res) => {
   try {
     const {
@@ -140,20 +178,17 @@ exports.Create_Clinic = async (req, res) => {
         days: days.split(","),
         password: hashPassword,
       });
-      // if (file) {
-      //   const { url, public_id } = await uploadImageToCloud(file.path);
-      //   clinic.logo = { url, public_id };
-      // } else {
-      //   return res
-      //     .status(404)
-      //     .json({ msg: "Logo is required", success: false });
-      // }
-      clinic.logo = {
-        url: "https://res.cloudinary.com/akm-dev/image/upload/v1691435705/zbk7i3z7wbcgtdgqaeky.jpg",
-
-        public_id: "zbk7i3z7wbcgtdgqaeky",
-      };
-
+      if (file) {
+        const { url, public_id } = await uploadImageToCloud(
+          file.path,
+          `Hospital/${name}-clinic/logo`
+        );
+        clinic.logo = { url, public_id };
+      } else {
+        return res
+          .status(404)
+          .json({ msg: "Logo is required", success: false });
+      }
       await clinic.save();
       hospital.clinics.push(clinic);
       await hospital.save();
@@ -184,19 +219,17 @@ exports.Create_Clinic = async (req, res) => {
           days: days.split(","),
           password: hashPassword,
         });
-        // if (file) {
-        //   const { url, public_id } = await uploadImageToCloud(file.path);
-        //   clinic.logo = { url, public_id };
-        // } else {
-        //   return res
-        //     .status(404)
-        //     .json({ msg: "Logo is required", success: false });
-        // }
-        clinic.logo = {
-          url: "https://res.cloudinary.com/akm-dev/image/upload/v1691435705/zbk7i3z7wbcgtdgqaeky.jpg",
-
-          public_id: "zbk7i3z7wbcgtdgqaeky",
-        };
+        if (file) {
+          const { url, public_id } = await uploadImageToCloud(
+            file.path,
+            `Hospital/${name}-clinic/logo`
+          );
+          clinic.logo = { url, public_id };
+        } else {
+          return res
+            .status(404)
+            .json({ msg: "Logo is required", success: false });
+        }
         await clinic.save();
         hospital.clinics.push(clinic);
         await hospital.save();
