@@ -3,7 +3,7 @@ const Clinic = require("../models/Clinic");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
-const { uploadImageToCloud } = require("../utils/helper");
+const { uploadImageToCloud,DeleteImageFromCloud } = require("../utils/helper");
 
 /**
  * Create a new hospital
@@ -247,7 +247,7 @@ exports.Create_Clinic = async (req, res) => {
 exports.Delete_Clinic = async (req, res) => {
   try {
     const { clinic_Id, admin_hos } = req.body;
-    const hospital = await Hospital.findById("66a0841f0c9ec23e6eca8e6a");
+    const hospital = await Hospital.findById(admin_hos._id);
     const clinic = await Clinic.findById(clinic_Id);
 
     if (hospital.clinics.length === 0) {
@@ -258,34 +258,34 @@ exports.Delete_Clinic = async (req, res) => {
       hospital.clinics = hospital.clinics.filter(
         (element) => element.toString() !== clinic_Id
       );
-      // const public_id = clinic.logo?.public_id;
-      // if (public_id) {
-      //   const { result } = await cloudinary.uploader.destroy(public_id);
-      //   if (result !== "ok") {
-      //     return res
-      //       .status(401)
-      //       .json({
-      //         msg: "Could not remove image from cloud!",
-      //         success: false,
-      //       });
-      //   }
-      // }
-      // const doctors = await Clinic.findById(clinic_Id).populate("doctors");
-      // console.log(doctors.doctors);
-      // if (doctors.doctors.length > 0) {
-      //   doctors.doctors.map(async (element) => {
-      //     const public_id = element.avatar?.public_id;
-      //     if (public_id) {
-      //       const { result } = await cloudinary.uploader.destroy(public_id);
-      //       if (result !== "ok") {
-      //         return res
-      //           .status(401)
-      //           .json({ msg: "Could not remove image from cloud!" });
-      //       }
-      //     }
-      //     await Doctor.findByIdAndDelete(element._id);
-      //   });
-      // }
+      const public_id = clinic.logo?.public_id;
+      if (public_id) {
+        const result = await DeleteImageFromCloud(public_id);
+        if (result !== "ok") {
+          return res
+            .status(401)
+            .json({
+              msg: "Could not remove image from cloud!",
+              success: false,
+            });
+        }
+      }
+      const doctors = await Clinic.findById(clinic_Id).populate("doctors");
+      console.log(doctors.doctors);
+      if (doctors.doctors.length > 0) {
+        doctors.doctors.map(async (element) => {
+          const public_id = element.avatar?.public_id;
+          if (public_id) {
+            const  result  = await DeleteImageFromCloud(public_id);
+            if (result !== "ok") {
+              return res
+                .status(401)
+                .json({ msg: "Could not remove image from cloud!" });
+            }
+          }
+          await Doctor.findByIdAndDelete(element._id);
+        });
+      }
       await hospital.save();
       await Clinic.findByIdAndDelete(clinic_Id);
       return res

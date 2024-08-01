@@ -5,3 +5,8 @@ exports.uploadImageToCloud = async (file,folder) => {
 
   return { url, public_id };
 };
+
+exports.DeleteImageFromCloud = async function (public_id){
+  const { result } = await cloudinary.uploader.destroy(public_id);
+  return result
+}
