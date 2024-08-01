@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const { uploadImageToCloud,DeleteImageFromCloud } = require("../utils/helper");
+const Doctor = require("../models/Doctor");
 
 /**
  * Create a new hospital
@@ -244,6 +245,22 @@ exports.Create_Clinic = async (req, res) => {
   }
 };
 
+/**
+ * Delete Clinic 
+ * ✅
+ */
+/**
+ * ✅ Steps :
+ * 1- extract the incoming data from the request body
+ * 2- retrieve hospital information from the database
+ * 3- checkout the clinics in hospital
+ * 4- we have 2 cases:
+ *       -if there is no clinics just return error to user
+ *       -if there is already clinics remove clinic from hospital
+ * 5- remove clinic data (doctor , logo.....)
+ * 6- save instance hospital
+ * 7- return successful message 
+ */
 exports.Delete_Clinic = async (req, res) => {
   try {
     const { clinic_Id, admin_hos } = req.body;
@@ -271,7 +288,6 @@ exports.Delete_Clinic = async (req, res) => {
         }
       }
       const doctors = await Clinic.findById(clinic_Id).populate("doctors");
-      console.log(doctors.doctors);
       if (doctors.doctors.length > 0) {
         doctors.doctors.map(async (element) => {
           const public_id = element.avatar?.public_id;

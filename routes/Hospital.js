@@ -18,8 +18,8 @@ router.post(
 );
 
 router.delete("/delete-clinic", 
-// is_auth,
-//  isAdmin, 
+is_auth,
+ isAdmin, 
  Delete_Clinic);
 
 router.get("/", Get);
