@@ -5,6 +5,8 @@ require("dotenv").config();
 
 
 const HospitalRoutes = require("./routes/Hospital");
+const ClinicRoutes = require("./routes/Clinic");
+
 
 const app = express()
 app.use(express.json());
@@ -18,6 +20,8 @@ mongoose
   .catch((err) => console.log(err));
 
 app.use("/api/hospital", HospitalRoutes);
+app.use("/api/clinic", ClinicRoutes);
+
 app.listen(4000,()=>{
     console.log("listening on port 4000")
 })
