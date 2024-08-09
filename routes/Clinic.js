@@ -1,5 +1,5 @@
 const {
-  UpdateClinicInfo,
+  UpdateClinicInfo, Login,
 
 } = require("../controllers/Clinic");
 const { uploadImage } = require("../middleware/multer");
@@ -7,6 +7,8 @@ const is_auth = require("../middleware/is_auth");
 // const { signInValidator } = require("../middleware/validator");
 // const { doctorInfoValidator, validate } = require("../middleware/validator");
 const router = require("express").Router();
+
+router.post("/login", Login);
 
 // router.post(
 //   "/add-doctor",
