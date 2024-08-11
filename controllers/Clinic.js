@@ -4,7 +4,10 @@ const jwt = require("jsonwebtoken");
 const { uploadImageToCloud, DeleteImageFromCloud } = require("../utils/helper");
 const _ = require("lodash");    
 
-
+/**
+ * Login
+ * ✅
+ */
 exports.Login = async (req, res) => {
   try {
     const { email, password } = req.body;
