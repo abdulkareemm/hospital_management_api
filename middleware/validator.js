@@ -47,6 +47,33 @@ exports.clinicInfoValidator = [
   check("email").isEmail().withMessage("Email is invalid!"),
 ];
 
+exports.doctorInfoValidator = [
+  check("name").trim().not().isEmpty().withMessage("doctor name is missing!"),
+  check("email").isEmail().withMessage("Email is invalid!"),
+  check("gender")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("Gender is a required field!"),
+  check("specialist")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("specialist  is a required field!!"),
+  check("mobile")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("mobile is a required field!"),
+  check("password")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("Password is missing!")
+    .isLength({ min: 8, max: 20 })
+    .withMessage("Password must be 8 to 20 characters long!"),
+];
+
 exports.validate = (req, res, next) => {
   const error = validationResult(req).array();
   if (error.length) {

@@ -1,23 +1,23 @@
 const {
-  UpdateClinicInfo, Login,
+  UpdateClinicInfo, Login, AddDoctorToClinic,
 
 } = require("../controllers/Clinic");
 const { uploadImage } = require("../middleware/multer");
 const is_auth = require("../middleware/is_auth");
+const { doctorInfoValidator, validate } = require("../middleware/validator");
 // const { signInValidator } = require("../middleware/validator");
-// const { doctorInfoValidator, validate } = require("../middleware/validator");
 const router = require("express").Router();
 
 router.post("/login", Login);
 
-// router.post(
-//   "/add-doctor",
-//   uploadImage.single("avatar"),
-//   is_auth,
-//   doctorInfoValidator,
-//   validate,
-//   AddDoctorToClinic
-// );
+router.post(
+  "/add-doctor",
+  uploadImage.single("avatar"),
+  is_auth,
+  doctorInfoValidator,
+  validate,
+  AddDoctorToClinic
+);
 router.post(
   "/update-info",
   uploadImage.single("logo"),

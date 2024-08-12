@@ -1,8 +1,9 @@
 const Clinic = require("../models/Clinic");
+const Doctor = require("../models/Doctor");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { uploadImageToCloud, DeleteImageFromCloud } = require("../utils/helper");
-const _ = require("lodash");    
+const _ = require("lodash");
 
 /**
  * Login
@@ -45,7 +46,6 @@ exports.Login = async (req, res) => {
   }
 };
 
-
 /**
  * Update info of clinic
  * ✅
@@ -68,7 +68,7 @@ exports.UpdateClinicInfo = async (req, res) => {
       }
       const { url, public_id } = await uploadImageToCloud(
         file.path,
-        `Hospital/${name}-clinic/logo`
+        `Hospital/${clinic.name}-clinic/logo`
       );
       req.body.logo = { url, public_id };
       await Clinic.findByIdAndUpdate(userId, { ...req.body }, { new: true });
@@ -88,5 +88,99 @@ exports.UpdateClinicInfo = async (req, res) => {
     res
       .status(5000)
       .json({ msg: "Error get Clinic info by_Id", success: false });
+  }
+};
+
+/**
+ * Create a new doctor in clinic
+ * ✅
+ */
+exports.AddDoctorToClinic = async (req, res) => {
+  try {
+    const {
+      name,
+      password,
+      email,
+      mobile,
+      gender,
+      specialist,
+      clinic,
+      userId,
+    } = req.body;
+    const { file } = req;
+
+    const clinic_ = await Clinic.findById(userId).populate("doctors");
+    if (clinic_.doctors.length === 0) {
+      const slat = await bcrypt.genSalt(10);
+      const hashPassword = await bcrypt.hash(password, slat);
+      const doctor = new Doctor({
+        name,
+        password: hashPassword,
+        email,
+        mobile,
+        gender,
+        specialist,
+        clinic,
+      });
+      if (file) {
+        const { url, public_id } = await uploadImageToCloud(
+          file.path,
+          `Hospital/${clinic_.name}-clinic/Doctors/${name}-logo`
+        );
+        doctor.avatar = { url, public_id };
+
+      } else {
+        return res
+          .status(400)
+          .json({ msg: "Avatar is required", success: false });
+      }
+
+      await doctor.save();
+      clinic_.doctors.push(doctor);
+      await clinic_.save();
+
+      return res
+        .status(201)
+        .json({ msg: "Created Successfully!", doctor, success: true });
+    } else {
+      const InClinic = clinic_.doctors.filter(
+        (element) => element.email === email
+      );
+      if (InClinic.length) {
+        return res.status(401).json({ msg: "Doctor is already exists!" });
+      } else {
+        const slat = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(password, slat);
+        const doctor = new Doctor({
+          name,
+          password: hashPassword,
+          email,
+          mobile,
+          gender,
+          specialist,
+          clinic,
+        });
+        if (file) {
+          const { url, public_id } = await uploadImageToCloud(
+            file.path,
+            `Hospital/${clinic_.name}-clinic/Doctors/${name}-logo`
+          );
+          doctor.avatar = { url, public_id };
+        } else {
+          return res
+            .status(400)
+            .json({ msg: "Avatar is required", success: false });
+        }
+        await doctor.save();
+        clinic_.doctors.push(doctor);
+        await clinic_.save();
+        return res
+          .status(201)
+          .json({ msg: "Created Successfully!", success: true });
+      }
+    }
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ err: "something wrong!" });
   }
 };
