@@ -4,6 +4,7 @@ const {
   Create_Clinic,
   Delete_Clinic,
   Login,
+  getPublicInfo,
 } = require("../controllers/Hospital");
 const { uploadImage } = require("../middleware/multer");
 const is_auth = require("../middleware/is_auth");
@@ -23,6 +24,7 @@ router.post(
   validate,
   Create_Clinic
 );
+router.get("/info", getPublicInfo);
 
 router.delete("/delete-clinic", is_auth, isAdmin, Delete_Clinic);
 

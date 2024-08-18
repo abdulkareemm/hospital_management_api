@@ -313,3 +313,25 @@ exports.Delete_Clinic = async (req, res) => {
     res.status(500).json({ err: "something wrong!" });
   }
 };
+
+
+exports.getPublicInfo = async (req, res) => {
+  try {
+    const hospital = await Hospital.findOne().populate("clinics");
+    return res.status(200).json({
+      success: true,
+      hospital: _.omit(hospital.toObject(), [
+        "password",
+        "clinics",
+        "__v",
+        "_id",
+      ]),
+      clinics: hospital.clinics.map((element) => {
+        return _.omit(element.toObject(), ["password", "doctors", "__v"]);
+      }),
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ err: "somethig wrong!" });
+  }
+};

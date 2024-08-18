@@ -184,3 +184,6 @@ exports.AddDoctorToClinic = async (req, res) => {
     res.status(500).json({ err: "something wrong!" });
   }
 };
+
+
+
