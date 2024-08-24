@@ -185,5 +185,28 @@ exports.AddDoctorToClinic = async (req, res) => {
   }
 };
 
-
+exports.getClinicInfo = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const clinic = await Clinic.findById(userId);
+    const doctors = await Clinic.findById(userId).populate("doctors");
+    // const appointments = await Appointment.find({ clinic: userId });
+    return res.status(200).json({
+      success: true,
+      // appointments,
+      clinic: _.omit(clinic.toObject(), [
+        "password",
+        "createdAt",
+        "updatedAt",
+        "__v",
+      ]),
+      doctors: doctors.doctors.map((element) => {
+        return _.omit(element.toObject(), ["password", "__v", "role"]);
+      }),
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ err: "something wrong!" });
+  }
+};
 
