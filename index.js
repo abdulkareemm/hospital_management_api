@@ -7,6 +7,8 @@ require("dotenv").config();
 const HospitalRoutes = require("./routes/Hospital");
 const ClinicRoutes = require("./routes/Clinic");
 const PatientRoutes = require("./routes/Patient");
+const DoctorRoutes = require("./routes/Doctor");
+
 
 
 
@@ -24,6 +26,8 @@ mongoose
 app.use("/api/hospital", HospitalRoutes);
 app.use("/api/clinic", ClinicRoutes);
 app.use("/api/patient", PatientRoutes);
+app.use("/api/doctor", DoctorRoutes);
+
 
 
 app.listen(4000,()=>{
