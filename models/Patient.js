@@ -24,7 +24,6 @@ const PatientSchema = new Schema(
       default: "patient",
     },
   },
-  { timestamps: true }
 );
 
 const Patient = User.discriminator("Patient", PatientSchema);

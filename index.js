@@ -23,6 +23,8 @@ mongoose
 
 app.use("/api/hospital", HospitalRoutes);
 app.use("/api/clinic", ClinicRoutes);
+app.use("/api/patient", PatientRoutes);
+
 
 app.listen(4000,()=>{
     console.log("listening on port 4000")
