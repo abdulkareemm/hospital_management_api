@@ -6,6 +6,8 @@ require("dotenv").config();
 
 const HospitalRoutes = require("./routes/Hospital");
 const ClinicRoutes = require("./routes/Clinic");
+const PatientRoutes = require("./routes/Patient");
+
 
 
 const app = express()
