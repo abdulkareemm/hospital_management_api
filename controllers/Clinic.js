@@ -128,7 +128,7 @@ exports.AddDoctorToClinic = async (req, res) => {
           `Hospital/${clinic_.name}-clinic/Doctors/${name}-logo`
         );
         doctor.avatar = { url, public_id };
-
+        
       } else {
         return res
           .status(400)
@@ -193,7 +193,7 @@ exports.getClinicInfo = async (req, res) => {
     // const appointments = await Appointment.find({ clinic: userId });
     return res.status(200).json({
       success: true,
-      // appointments,
+      appointments: [],
       clinic: _.omit(clinic.toObject(), [
         "password",
         "createdAt",
@@ -209,4 +209,3 @@ exports.getClinicInfo = async (req, res) => {
     res.status(500).json({ err: "something wrong!" });
   }
 };
-
