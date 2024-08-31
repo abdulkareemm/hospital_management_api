@@ -270,3 +270,23 @@ exports.Reservation = async (req, res) => {
     res.status(500).json({ err: "somethig wrong!" });
   }
 };
+exports.getPatientInfoById = async (req, res) => {
+  const { userId } = req.body;
+  try {
+    const patient = await Patient.findById(userId);
+    if (!patient) {
+      return res
+        .status(200)
+        .json({ msg: "Patient does not exite", success: false });
+    }
+    res.status(200).json({
+      msg: "User found",
+      success: true,
+      patient: _.omit(patient.toObject(), ["password"]),
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ msg: "Error getting user info", success: false });
+  }
+};
