@@ -209,3 +209,22 @@ exports.getClinicInfo = async (req, res) => {
     res.status(500).json({ err: "something wrong!" });
   }
 };
+
+exports.getClinicInfoById = async (req, res) => {
+  try {
+    const { clinicId } = req.body;
+    const clinic = await Clinic.findById(clinicId).populate("doctors");
+    return res.status(200).json({
+      success: true,
+      clinic: _.omit(clinic.toObject(), [
+        "password",
+        "createdAt",
+        "updatedAt",
+        "__v",
+      ]),
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ err: "something wrong!" });
+  }
+};

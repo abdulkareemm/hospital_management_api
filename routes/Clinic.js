@@ -1,5 +1,5 @@
 const {
-  UpdateClinicInfo, Login, AddDoctorToClinic, getClinicInfo,
+  UpdateClinicInfo, Login, AddDoctorToClinic, getClinicInfo, getClinicInfoById,
 
 } = require("../controllers/Clinic");
 const { uploadImage } = require("../middleware/multer");
@@ -25,9 +25,8 @@ router.post(
   UpdateClinicInfo
 );
 router.get("/", is_auth, getClinicInfo);
+router.post("/", is_auth, getClinicInfoById);
 
-// router.post("/login", signInValidator, validate, Login);
-// router.post("/", is_auth, getClinicInfoById);
 // router.post("/delete-doctor", is_auth, DeletdoctorfromClinic);
 // router.post("/change-state", is_auth, ChangeApoointmentStatus);
 // router.get("/get-today-appointemnts", is_auth, getAppointmentsToday);
