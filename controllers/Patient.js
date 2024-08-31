@@ -242,3 +242,31 @@ exports.CheckDateReservation = async (req, res) => {
     res.status(500).json({ err: "something wrong!" });
   }
 };
+exports.Reservation = async (req, res) => {
+  try {
+    let { userId, reason, clinicId, date, time, visitType } = req.body;
+
+    date = moment.utc(date, "DD-MM-YYYY").toISOString();
+    const reserve = new Appointment({
+      reason,
+      patient: userId,
+      clinic: clinicId,
+      date,
+      time,
+      visitType,
+      status: "Confirmed",
+    });
+    await Clinic.findByIdAndUpdate(
+      clinicId,
+      { $push: { appointments: reserve } },
+      { new: true }
+    );
+    await reserve.save();
+    return res
+      .status(201)
+      .json({ msg: "Reservation Done Successfully!", success: true });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ err: "somethig wrong!" });
+  }
+};
