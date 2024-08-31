@@ -110,7 +110,20 @@ exports.signInValidator = [
     .isLength({ min: 8, max: 20 })
     .withMessage("Password must be 8 to 20 characters long!"),
 ];
-
+exports.ReservationInfoValidator = [
+  check("clinicId")
+    .notEmpty()
+    .withMessage("Invalid way to reservation")
+    .isMongoId()
+    .withMessage("Invalid Clinic Id"),
+  check("reason")
+    .trim()
+    .not()
+    .isEmpty()
+    .withMessage("reason is a required field!"),
+  check("date").trim().not().isEmpty().withMessage("date is a required field!"),
+  check("time").trim().not().isEmpty().withMessage("time is a required field!"),
+];
 
 exports.validate = (req, res, next) => {
   const error = validationResult(req).array();
