@@ -1,7 +1,10 @@
 const Patient = require("../models/Patient");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Clinic = require("../models/Clinic");
 const _ = require("lodash");
+const moment = require("moment");
+const Appointment = require("../models/Appointment");
 
 exports.register = async (req, res) => {
   try {
@@ -49,7 +52,7 @@ exports.login = async (req, res) => {
         .json({ msg: "Password is incorrect", success: false });
     }
     const token = jwt.sign({ id: patient._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1d",
+      expiresIn: "30d",
     });
     res.status(201).json({
       token,
@@ -234,6 +237,7 @@ exports.CheckDateReservation = async (req, res) => {
           }
         }
       } else {
+
         return res.status(401).json({ msg: "Day is off, try another day!" });
       }
     }

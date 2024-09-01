@@ -1,6 +1,7 @@
+const mongoose = require('mongoose')
 const { Schema, model } = require("mongoose");
 const { Types } = Schema;
-const AppointmentSchema = new Schema({
+const AppointmentSchema = new mongoose.Schema({
   reason: {
     type: String,
     required: true,
@@ -29,7 +30,10 @@ const AppointmentSchema = new Schema({
   status: {
     type: String,
     enum: ["Confirmed", "Cancelled", "Completed"],
-  },
-});
+  }
+},{
+    timestamps:true
+  });
 
-module.exports = model("Appointment", AppointmentSchema);
+const Appointment = mongoose.model("Appointment", AppointmentSchema);
+module.exports = Appointment;
