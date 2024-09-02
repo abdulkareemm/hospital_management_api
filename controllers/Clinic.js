@@ -190,10 +190,10 @@ exports.getClinicInfo = async (req, res) => {
     const { userId } = req.body;
     const clinic = await Clinic.findById(userId);
     const doctors = await Clinic.findById(userId).populate("doctors");
-    // const appointments = await Appointment.find({ clinic: userId });
+    const appointments = await Appointment.find({ clinic: userId });
     return res.status(200).json({
       success: true,
-      appointments: [],
+      appointments,
       clinic: _.omit(clinic.toObject(), [
         "password",
         "createdAt",
@@ -222,6 +222,25 @@ exports.getClinicInfoById = async (req, res) => {
         "updatedAt",
         "__v",
       ]),
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ err: "something wrong!" });
+  }
+};
+exports.getAppointmentsToday = async (req, res) => {
+  try {
+    const today = moment.utc().toISOString();
+    const { userId } = req.body;
+    let todayAppointments = await Appointment.find({
+      clinic: { $eq: userId },
+      date: { $eq: moment.utc(today, "YYYY-MM-DD").toISOString() },
+    })
+      .populate("patient", "address , name , mobile")
+      .sort("time");
+    res.status(201).json({
+      success: true,
+      todayAppointments,
     });
   } catch (err) {
     console.log(err.message);
