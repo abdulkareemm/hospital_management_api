@@ -247,3 +247,24 @@ exports.getAppointmentsToday = async (req, res) => {
     res.status(500).json({ err: "something wrong!" });
   }
 };
+exports.getAppointmentsDoctorToday = async (req, res) => {
+  try {
+    const today = moment.utc().toISOString();
+
+    const { clinicId } = req.body;
+    let todayAppointments = await Appointment.find({
+      clinic: { $eq: clinicId },
+      date: { $eq: moment.utc(today, "YYYY-MM-DD").toISOString() },
+    })
+      .populate("patient", "address , name , mobile")
+      .populate("clinic", "visitDuration")
+      .sort("time");
+    res.status(201).json({
+      success: true,
+      todayAppointments,
+    });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ err: "somethig wrong!" });
+  }
+};
