@@ -1,4 +1,5 @@
 const Doctor = require("../models/Doctor");
+const Diagnosis = require("../models/Diagnosis");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
@@ -54,5 +55,29 @@ exports.UpdateDoctorInfo = async (req, res) => {
     res
       .status(5000)
       .json({ msg: "Error get doctor info by id", success: false });
+  }
+};
+exports.MakeDaignosis = async (req, res) => {
+  try {
+    let { patientId, userId, date, clinicId, daignosis, time } = req.body;
+    date = moment.utc(date, "DD-MM-YYYY").toISOString();
+
+    const newDaignosis = new Diagnosis({
+      patient: patientId,
+      doctor: userId,
+      clinic: clinicId,
+      time,
+      date,
+      daignosis,
+    });
+    newDaignosis.save();
+
+    res
+      .status(201)
+      .json({ msg: "Daignosis is save successfully!", success: true });
+  } catch (err) {
+    res
+      .status(5000)
+      .json({ msg: "Something wrong", success: false });
   }
 };
