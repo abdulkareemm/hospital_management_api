@@ -81,3 +81,21 @@ exports.MakeDaignosis = async (req, res) => {
       .json({ msg: "Something wrong", success: false });
   }
 };
+exports.GetAllDaignosis = async (req, res) => {
+  try {
+    const { patientId, clinicId } = req.body;
+    const allDaignosis = await Diagnosis.find({
+      patient: { $eq: patientId },
+      clinic: { $eq: clinicId },
+    })
+      .populate("doctor", "name")
+      .populate("patient", "name")
+      .sort("date");
+
+    res.status(201).json({ allDaignosis, success: true });
+  } catch (err) {
+    res
+      .status(5000)
+      .json({ msg: "Error get previous diagnosis ", success: false });
+  }
+};
