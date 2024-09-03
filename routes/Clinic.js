@@ -27,8 +27,6 @@ router.post(
 router.get("/", is_auth, getClinicInfo);
 router.post("/", is_auth, getClinicInfoById);
 
-// router.post("/delete-doctor", is_auth, DeletdoctorfromClinic);
-// router.post("/change-state", is_auth, ChangeApoointmentStatus);
 router.get("/get-today-appointments", is_auth, getAppointmentsToday);
 router.post("/get-today-appointments", is_auth, getAppointmentsDoctorToday);
 

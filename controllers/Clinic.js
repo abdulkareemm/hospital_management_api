@@ -7,6 +7,7 @@ const _ = require("lodash");
 const moment = require("moment");
 const Appointment = require("../models/Appointment")
 
+
 /**
  * Login
  * ✅
@@ -265,6 +266,40 @@ exports.getAppointmentsDoctorToday = async (req, res) => {
       success: true,
       todayAppointments,
     });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ err: "something wrong!" });
+  }
+};
+exports.DeleteDoctor = async (req, res) => {
+  try {
+    const { doctorId, userId } = req.body;
+    const clinic = await Clinic.findById(userId);
+    const doctor = await Doctor.findById(doctorId);
+
+    if (clinic.doctors.length === 0) {
+      return res
+        .status(404)
+        .json({ msg: "There is no doctor in this clinic" });
+    } else {
+      clinic.doctors = clinic.doctors.filter(
+        (element) => element.toString() !== doctorId
+      );
+      const public_id = doctor.avatar?.public_id;
+      if (public_id) {
+        const { result } = await DeleteImageFromCloud(public_id);
+        if (result !== "ok") {
+          return res
+            .status(401)
+            .json({ msg: "Could not remove image from cloud!" });
+        }
+      }
+      await clinic.save();
+      await Doctor.findByIdAndDelete(doctorId);
+      return res
+        .status(201)
+        .json({ success: true, msg: "Doctor deleted successfully" });
+    }
   } catch (err) {
     console.log(err.message);
     res.status(500).json({ err: "something wrong!" });
