@@ -6,7 +6,7 @@ const _ = require("lodash");
 exports.Login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await Doctor.findOne({ email }).populate({path:"clinic",select:"name -_id -userType"})
+    const user = await Doctor.findOne({ email }).populate({path:"clinic",select:"name id -userType"})
     if (!user) {
       return res.status(403).json({ msg: "Invalid Username/ password" });
     }

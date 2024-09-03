@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { uploadImageToCloud, DeleteImageFromCloud } = require("../utils/helper");
 const _ = require("lodash");
+const moment = require("moment");
+const Appointment = require("../models/Appointment")
 
 /**
  * Login
@@ -265,6 +267,6 @@ exports.getAppointmentsDoctorToday = async (req, res) => {
     });
   } catch (err) {
     console.log(err.message);
-    res.status(500).json({ err: "somethig wrong!" });
+    res.status(500).json({ err: "something wrong!" });
   }
 };
