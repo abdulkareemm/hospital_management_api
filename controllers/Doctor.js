@@ -32,3 +32,27 @@ exports.Login = async (req, res) => {
     res.status(500).json({ msg: err.message });
   }
 };
+exports.UpdateDoctorInfo = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const doctor = await Doctor.findOneAndUpdate(
+      { email },
+      { ...req.body },
+      { new: true }
+    );
+    if (doctor) {
+      res.status(200).json({
+        msg: "Doctor info updated successfully",
+        doctor,
+      });
+    } else {
+      res.status(401).json({
+        msg: "Doctor not found!",
+      });
+    }
+  } catch (err) {
+    res
+      .status(5000)
+      .json({ msg: "Error get doctor info by id", success: false });
+  }
+};
