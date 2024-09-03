@@ -305,3 +305,19 @@ exports.DeleteDoctor = async (req, res) => {
     res.status(500).json({ err: "something wrong!" });
   }
 };
+exports.ChangeAppointmentStatus = async (req, res) => {
+  try {
+    const { appointmentId, status } = req.body;
+    const appointment = await Appointment.findByIdAndUpdate(
+      { _id: appointmentId },
+      { status },
+      { new: true }
+    );
+    res
+      .status(201)
+      .json({ msg: "updated successfully!", appointment, success: true });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ err: "something wrong!" });
+  }
+};
