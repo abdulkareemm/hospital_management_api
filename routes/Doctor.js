@@ -1,9 +1,11 @@
 
 
 const { Login, UpdateDoctorInfo, MakeDaignosis, GetAllDaignosis } = require("../controllers/Doctor");
+const is_auth = require("../middleware/is_auth");
 const {
   signInValidator,
   validate,
+  DaignosisValidator,
 } = require("../middleware/validator");
 
 
