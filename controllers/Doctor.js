@@ -3,6 +3,7 @@ const Diagnosis = require("../models/Diagnosis");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
+const moment = require("moment");
 
 exports.Login = async (req, res) => {
   try {
@@ -53,7 +54,7 @@ exports.UpdateDoctorInfo = async (req, res) => {
     }
   } catch (err) {
     res
-      .status(5000)
+      .status(500)
       .json({ msg: "Error get doctor info by id", success: false });
   }
 };
@@ -76,8 +77,9 @@ exports.MakeDaignosis = async (req, res) => {
       .status(201)
       .json({ msg: "Daignosis is save successfully!", success: true });
   } catch (err) {
+    console.log(err)
     res
-      .status(5000)
+      .status(500)
       .json({ msg: "Something wrong", success: false });
   }
 };
@@ -95,7 +97,7 @@ exports.GetAllDaignosis = async (req, res) => {
     res.status(201).json({ allDaignosis, success: true });
   } catch (err) {
     res
-      .status(5000)
+      .status(500)
       .json({ msg: "Error get previous diagnosis ", success: false });
   }
 };
