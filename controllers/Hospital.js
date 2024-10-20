@@ -71,11 +71,10 @@ exports.Create = async (req, res) => {
 
 exports.Get = async (req, res) => {
   try {
-    const Hos = await Hospital.find();
+    const Hos = await Hospital.find().populate("clinics");
     const doctorsCount = await Doctor.countDocuments();
     const patientsCount = await Patient.countDocuments();
     const appointmentsCount = await Appointment.countDocuments();
-    console.log(doctorsCount, patientsCount, appointmentsCount)
     res
       .status(200)
       .json({
@@ -343,6 +342,6 @@ exports.getPublicInfo = async (req, res) => {
     });
   } catch (err) {
     console.log(err.message);
-    res.status(500).json({ err: "somethig wrong!" });
+    res.status(500).json({ err: "something wrong!" });
   }
 };
