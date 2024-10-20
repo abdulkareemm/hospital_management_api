@@ -3,8 +3,10 @@ const Clinic = require("../models/Clinic");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
-const { uploadImageToCloud,DeleteImageFromCloud } = require("../utils/helper");
+const { uploadImageToCloud, DeleteImageFromCloud } = require("../utils/helper");
 const Doctor = require("../models/Doctor");
+const Patient = require("../models/Patient");
+const Appointment = require("../models/Appointment");
 
 /**
  * Create a new hospital
@@ -70,7 +72,19 @@ exports.Create = async (req, res) => {
 exports.Get = async (req, res) => {
   try {
     const Hos = await Hospital.find();
-    res.status(200).json(Hos);
+    const doctorsCount = await Doctor.countDocuments();
+    const patientsCount = await Patient.countDocuments();
+    const appointmentsCount = await Appointment.countDocuments();
+    console.log(doctorsCount, patientsCount, appointmentsCount)
+    res
+      .status(200)
+      .json({
+        success: true,
+        Hos,
+        doctorsCount,
+        patientsCount,
+        appointmentsCount,
+      });
   } catch (error) {
     console.log(err.message);
     res.status(500).json({ err: "something wrong!" });
@@ -124,7 +138,7 @@ exports.Login = async (req, res) => {
 };
 
 /**
- * Create a new Clinic 
+ * Create a new Clinic
  * ✅
  */
 /**
@@ -134,7 +148,7 @@ exports.Login = async (req, res) => {
  * 3- checkout the clinics in hospital
  * 4- we have 2 cases:
  *       -if there is no clinics just make new instance from clinic schema and save it in database
- *       -if there is already clinics check if it exists return new error else make new instance from 
+ *       -if there is already clinics check if it exists return new error else make new instance from
  *            clinic schema and save it in database
  * 5- add new clinic to Clinics array in hospital instance
  * 6- save instance hospital
@@ -246,7 +260,7 @@ exports.Create_Clinic = async (req, res) => {
 };
 
 /**
- * Delete Clinic 
+ * Delete Clinic
  * ✅
  */
 /**
@@ -259,7 +273,7 @@ exports.Create_Clinic = async (req, res) => {
  *       -if there is already clinics remove clinic from hospital
  * 5- remove clinic data (doctor , logo.....)
  * 6- save instance hospital
- * 7- return successful message 
+ * 7- return successful message
  */
 exports.Delete_Clinic = async (req, res) => {
   try {
@@ -279,12 +293,10 @@ exports.Delete_Clinic = async (req, res) => {
       if (public_id) {
         const result = await DeleteImageFromCloud(public_id);
         if (result !== "ok") {
-          return res
-            .status(401)
-            .json({
-              msg: "Could not remove image from cloud!",
-              success: false,
-            });
+          return res.status(401).json({
+            msg: "Could not remove image from cloud!",
+            success: false,
+          });
         }
       }
       const doctors = await Clinic.findById(clinic_Id).populate("doctors");
@@ -292,7 +304,7 @@ exports.Delete_Clinic = async (req, res) => {
         doctors.doctors.map(async (element) => {
           const public_id = element.avatar?.public_id;
           if (public_id) {
-            const  result  = await DeleteImageFromCloud(public_id);
+            const result = await DeleteImageFromCloud(public_id);
             if (result !== "ok") {
               return res
                 .status(401)
@@ -313,7 +325,6 @@ exports.Delete_Clinic = async (req, res) => {
     res.status(500).json({ err: "something wrong!" });
   }
 };
-
 
 exports.getPublicInfo = async (req, res) => {
   try {
